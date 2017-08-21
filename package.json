@@ -1,0 +1,16 @@
+{
+  "name": "svift-render-nightmare",
+  "version": "1.0.0",
+  "description": "main render engine, making use of nightmare (electron)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/svift/render-nightmare-module.git"
+  },
+  "author": "Sebastian Meier",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/svift/render-nightmare-module#readme"
+}
