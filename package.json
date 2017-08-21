@@ -12,5 +12,9 @@
   },
   "author": "Sebastian Meier",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/svift/render-nightmare-module#readme"
+  "homepage": "https://bitbucket.org/svift/render-nightmare-module#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "nightmare": "^2.10.0"
+  }
 }
