@@ -78,7 +78,6 @@ var render = (function () {
     try {
       const load = nightmare
         .evaluate(function (data) {
-          console.log('evaluate', data);
           vis(data, function(){});
         }, data)
 
@@ -104,7 +103,6 @@ var render = (function () {
         .screenshot(job.folder + '/png/' + job.snap_count + '.png', {x:0,y:0,width:job.data.params.width,height:job.data.params.height})
 
       await nightmare.then(function (result) {
-        console.log('snapped')
         module.getSVG()
       }).catch(function (error) {
         console.error('Failed:', error);
@@ -146,7 +144,6 @@ var render = (function () {
         if(job.snap_count < job.data.params.duration){
           module.goTo()
         }else{
-          console.log('done');
           render_callback('renderDone');
         }
 
@@ -167,7 +164,6 @@ var render = (function () {
         }, (job.snap_count / job.data.params.duration))
 
       await nightmare.then(function (result) {
-        console.log('Vis', result);
         module.snap();
       })
       .catch(function (error) {
