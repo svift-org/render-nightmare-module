@@ -64,8 +64,6 @@ var render = (function () {
   }
 
   module.render = async function(data, id, folder){
-    console.log(data);
-
     job = {}
     for(var key in default_job){
       job[key] = default_job[key]
