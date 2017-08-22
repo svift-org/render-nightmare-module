@@ -69,6 +69,7 @@ var render = (function () {
       job[key] = default_job[key]
     }
     job.id = id
+    console.log(data)
     job.data = data
     job.folder = folder
     if(!('duration' in job.data.params)){ job.data.params['duration'] = 100 }
