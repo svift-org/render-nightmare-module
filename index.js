@@ -100,7 +100,7 @@ var render = (function () {
 
     try {
       const load = nightmare
-        .screenshot('.' + job.folder + '/png/' + job.snap_count + '.png', {x:0,y:0,width:job.data.params.width,height:job.data.params.height})
+        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:job.data.params.width,height:job.data.params.height})
 
       await nightmare.then(function (result) {
         module.getSVG()
@@ -139,7 +139,7 @@ var render = (function () {
         })
 
       await nightmare.then(function (result) {
-        fs.writeFileSync('.' + job.folder + '/svg/' + job.snap_count + '.svg', module.cleanSVG(result), 'utf8')
+        fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result), 'utf8')
 
         if(job.snap_count < job.data.params.duration){
           module.goTo()
@@ -172,6 +172,16 @@ var render = (function () {
 
     } catch (error) {
       throw error;
+    }
+  }
+
+  module.formatNumber = function (n) {
+    if(n>99){
+      return n
+    }else if(n>9){
+      return '0'+n
+    }else{
+      return '00'+n
     }
   }
 
