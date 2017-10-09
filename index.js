@@ -23,11 +23,13 @@ var render = (function () {
       id: null,
       folder: null
     },    
-    render_callback = null
+    render_callback = null,
+    update_callback = null
 
   //Load template and scripts+styles
-  module.init = async function (callback) {
-    render_callback = callback;
+  module.init = async function (callback, _update_callback) {
+    render_callback = callback
+    update_callback = _update_callback
     try {
       const load = nightmare
         .goto(default_job.url)
@@ -103,6 +105,7 @@ var render = (function () {
         .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:job.data.params.width,height:job.data.params.height})
 
       await nightmare.then(function (result) {
+        update_callback('png', (job.snap_count / job.data.params.duration))
         module.getSVG()
       }).catch(function (error) {
         console.error('Failed:', error);
@@ -142,6 +145,7 @@ var render = (function () {
         fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result), 'utf8')
 
         if(job.snap_count < job.data.params.duration){
+          update_callback('svg', (job.snap_count / job.data.params.duration))
           module.goTo()
         }else{
           render_callback('renderDone');
