@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/svift/render-nightmare-module.git"
+    "url": "git+https://git@github.com/svift-org/render-nightmare-module.git"
   },
   "author": "Sebastian Meier",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/svift/render-nightmare-module#readme",
+  "homepage": "https://github.com/svift-org/render-nightmare-module#readme",
   "dependencies": {
     "fs": "0.0.1-security",
     "nightmare": "^2.10.0"
