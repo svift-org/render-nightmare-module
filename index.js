@@ -28,6 +28,8 @@ var render = (function () {
 
   //Load template and scripts+styles
   module.init = async function (callback, _update_callback) {
+    console.log('initStart');
+
     render_callback = callback
     update_callback = _update_callback
     try {
@@ -39,6 +41,8 @@ var render = (function () {
         //wait for page to finish loading
         return false
       })
+
+      console.log('initDone');
 
       render_callback('initDone')
 
