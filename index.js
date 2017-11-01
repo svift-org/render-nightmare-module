@@ -24,7 +24,7 @@ var render = (function () {
       url: 'https://svift-backend.herokuapp.com/'+config.secret+'/vis',
       id: null,
       folder: null
-    },    
+    },
     render_callback = null,
     update_callback = null
 
