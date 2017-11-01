@@ -19,7 +19,7 @@ var render = (function () {
     default_job = {
       snap_count : 0,
       data: {params:{width:500,height:500}},
-      url: 'http://localhost:5000/93z8heodsa/vis',
+      url: 'https://svift-backend.herokuapp.com/93z8heodsa/vis',
       id: null,
       folder: null
     },    
