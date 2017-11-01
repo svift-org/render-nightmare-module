@@ -28,8 +28,6 @@ var render = (function () {
 
   //Load template and scripts+styles
   module.init = async function (callback, _update_callback) {
-    console.log('initStart');
-
     render_callback = callback
     update_callback = _update_callback
     try {
@@ -37,14 +35,16 @@ var render = (function () {
         .goto(default_job.url)
         .viewport(default_job.data.params.width, default_job.data.params.height)
 
-      await nightmare.evaluate(function(){
+      nightmare.evaluate(function(){
         //wait for page to finish loading
         return false
+      }).then(function(){
+        render_callback('initDone')
+      }).catch(reason => {
+        console.error(reason)
       })
 
       console.log('initDone');
-
-      render_callback('initDone')
 
     } catch (error) {
       //TODO: Try again?
