@@ -46,8 +46,6 @@ var render = (function () {
         console.error(reason)
       })
 
-      console.log('initDone');
-
     } catch (error) {
       //TODO: Try again?
       throw error;
