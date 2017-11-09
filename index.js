@@ -7,8 +7,6 @@
 'use strict';
 
 var fs = require('fs')
-//Acquire from root
-var config = require('../../config.json')
 
 var Nightmare = require('nightmare')
 var nightmare = Nightmare()
@@ -21,7 +19,7 @@ var render = (function () {
     default_job = {
       snap_count : 0,
       data: {params:{width:500,height:500}},
-      url: 'https://svift-backend.herokuapp.com/'+config.secret+'/vis',
+      url: 'https://svift-backend.herokuapp.com/'+process.env.EXPRESS_SECRET+'/vis',
       id: null,
       folder: null
     },
