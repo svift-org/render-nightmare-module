@@ -19,7 +19,7 @@ var render = (function () {
     default_job = {
       snap_count : 0,
       data: {params:{width:500,height:500}},
-      url: 'https://svift-backend.herokuapp.com/'+process.env.EXPRESS_SECRET+'/vis',
+      url: 'https://'+process.env.HEROKU_URL+'.herokuapp.com/'+process.env.EXPRESS_SECRET+'/vis',
       id: null,
       folder: null
     },
