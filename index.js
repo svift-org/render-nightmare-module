@@ -26,6 +26,8 @@ var render = (function () {
     render_callback = null,
     update_callback = null
 
+  console.log(default_job.url)
+
   //Load template and scripts+styles
   module.init = async function (callback, _update_callback) {
     render_callback = callback
