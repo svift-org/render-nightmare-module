@@ -207,9 +207,9 @@ var render = (function () {
                     if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
                       gm()
                         .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
-                        .background('#ffffff')
                         .gravity('Center')
                         .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                        .background('#ffffff')
                         .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
                           if (err) throw err;
                           
