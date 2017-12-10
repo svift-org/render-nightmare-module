@@ -97,8 +97,6 @@ var render = (function () {
     job.data = data
     job.folder = folder
     if(!('duration' in job.data.params)){ job.data.params['duration'] = 100 }
-    if(!('width' in job.data.params)){ job.data.params['width'] = 500 }
-    if(!('height' in job.data.params)){ job.data.params['height'] = 500 }
 
     try {
       const load = nightmare
