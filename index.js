@@ -34,6 +34,7 @@ var render = (function () {
     config = _config
     render_callback = callback
     update_callback = _update_callback
+    console.log(config)
     try {
       const load = nightmare
         .goto(default_job.url)
