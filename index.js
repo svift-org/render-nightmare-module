@@ -208,7 +208,7 @@ var render = (function () {
                       gm()
                         .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
                         .background('#ffffff')
-                        .gravity('center')
+                        .gravity('Center')
                         .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
                         .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
                           if (err) throw err;
