@@ -26,14 +26,16 @@ var render = (function () {
     },
     render_callback = null,
     update_callback = null,
+    social_callback = null,
     size_count = 0,
     config = null
 
   //Load template and scripts+styles
-  module.init = async function (callback, _update_callback, _config) {
+  module.init = async function (callback, _update_callback, _social_callback, _config) {
     config = _config
     render_callback = callback
     update_callback = _update_callback
+    social_callback = _social_callback
     try {
       const load = nightmare
         .goto(default_job.url)
@@ -184,7 +186,7 @@ var render = (function () {
 
   module.processSize = async function (){
     if(size_count >= config.sizes.length-1){
-      update_callback('social', 1)
+      social_callback()
 
       //All the sizes are done. Prepare for keyframe rendering
       module.setScale(false, function(){
