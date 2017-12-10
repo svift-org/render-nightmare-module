@@ -1,0 +1,212 @@
+{
+	"video":{
+		"size":{
+			"width":960,
+			"height":360
+		},
+		"output":{
+			"width":1920,
+			"height":720
+		}
+	},
+	"sizes":[
+		{
+			"class": "social",
+			"icon": "instagram",
+			"file": "instagram",
+			"name": "Instagram",
+			"size":{
+				"width":540,
+				"height":540
+			},
+			"scaled":{
+				"width":1080,
+				"height":1080
+			},
+			"output":{
+				"width":1080,
+				"height":1080
+			}
+		},
+		{
+			"class": "social",
+			"icon": "linkedin",
+			"file": "linkedin",
+			"name":"LinkIn",
+			"size":{
+				"width":700,
+				"height":400
+			},
+			"scaled":{
+				"width":1400,
+				"height":800
+			},
+			"output":{
+				"width":1400,
+				"height":800
+			}
+		},
+		{
+			"class": "social",
+			"icon": "google",
+			"file": "google",
+			"name":"Google+",
+			"size":{
+				"width":497,
+				"height":373
+			},
+			"scaled":{
+				"width":994,
+				"height":746
+			},
+			"output":{
+				"width":994,
+				"height":746
+			}
+		},
+		{
+			"class": "social",
+			"icon": "tumblr",
+			"file": "tumblr",
+			"name":"Tumblr",
+			"size":{
+				"width":640,
+				"height":960
+			},
+			"scaled":{
+				"width":1280,
+				"height":1920
+			},
+			"output":{
+				"width":1280,
+				"height":1920
+			}
+		},
+		{
+			"class": "social",
+			"icon": "pinterest",
+			"file": "pinterest",
+			"name":"Pinterest",
+			"size":{
+				"width":600,
+				"height":600
+			},
+			"scaled":{
+				"width":1200,
+				"height":1200
+			},
+			"output":{
+				"width":1200,
+				"height":1200
+			}
+		},
+		{
+			"class": "social",
+			"icon": "twitter",
+			"file": "twitter",
+			"name":"Twitter",
+			"size":{
+				"width":512,
+				"height":256
+			},
+			"scaled":{
+				"width":1024,
+				"height":512
+			},
+			"output":{
+				"width":1024,
+				"height":512
+			}
+		},
+		{
+			"class": "social",
+			"icon": "snapchat",
+			"file": "snapchat",
+			"name":"Snapchat",
+			"size":{
+				"width":476,
+				"height":810
+			},
+			"scaled":{
+				"width":952,
+				"height":1620
+			},
+			"output":{
+				"width":1080,
+				"height":1920
+			}
+		},
+		{
+			"class": "social",
+			"icon": "facebook",
+			"file": "facebook",
+			"name":"Facebook",
+			"size":{
+				"width":600,
+				"height":315
+			},
+			"scaled":{
+				"width":1200,
+				"height":630
+			},
+			"output":{
+				"width":1200,
+				"height":630
+			}
+		},
+		{
+			"class": "general",
+			"icon": "image",
+			"file": "horizontal",
+			"name":"Horizontal / Landscape",
+			"size":{
+				"width":1024,
+				"height":512
+			},
+			"scaled":{
+				"width":2048,
+				"height":1024
+			},
+			"output":{
+				"width":2048,
+				"height":1024
+			}
+		},
+		{
+			"class": "general",
+			"icon": "image",
+			"file": "vertical",
+			"name":"Vertical / Portrait",
+			"size":{
+				"width":800,
+				"height":1200
+			},
+			"scaled":{
+				"width":1600,
+				"height":2400
+			},
+			"output":{
+				"width":1600,
+				"height":2400
+			}
+		},
+		{
+			"class": "general",
+			"icon": "image",
+			"file": "square",
+			"name":"Square",
+			"size":{
+				"width":512,
+				"height":512
+			},
+			"scaled":{
+				"width":1024,
+				"height":1024
+			},
+			"output":{
+				"width":1024,
+				"height":1024
+			}
+		}
+	]
+}

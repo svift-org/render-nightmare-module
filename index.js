@@ -6,7 +6,9 @@
 
 'use strict';
 
-var fs = require('fs')
+var fs = require('fs'),
+  gm = require('gm'),
+  config = require('./config.json')
 
 var Nightmare = require('nightmare')
 var nightmare = Nightmare()
@@ -24,7 +26,8 @@ var render = (function () {
       folder: null
     },
     render_callback = null,
-    update_callback = null
+    update_callback = null,
+    size_count = 0
 
   //Load template and scripts+styles
   module.init = async function (callback, _update_callback) {
@@ -67,7 +70,24 @@ var render = (function () {
     }    
   }
 
+  module.setScale = async function (scale, callback){
+    try{
+      const load = nightmare
+        .evaluate(function (data) {
+          setScale(data, function(){});
+        }, scale)
+
+      await nightmare.evaluate(function(){ return false; })
+
+      callback()
+
+    } catch (error) {
+      throw error;
+    }    
+  }
+
   module.render = async function(data, id, folder){
+    size_count = 0
     job = {}
     for(var key in default_job){
       job[key] = default_job[key]
@@ -86,7 +106,8 @@ var render = (function () {
         }, data)
 
       await nightmare.then(function (result) {
-        module.resize(job.data.params.width, job.data.params.height, module.snap)
+
+        module.goTo(1, module.processSize)
 
       }).catch(function (error) {
         console.error('Failed:', error);
@@ -148,7 +169,7 @@ var render = (function () {
 
         if(job.snap_count < job.data.params.duration){
           update_callback('svg', (job.snap_count / job.data.params.duration))
-          module.goTo()
+          module.goTo((job.snap_count / job.data.params.duration), module.snap)
         }else{
           render_callback('renderDone');
         }
@@ -162,15 +183,71 @@ var render = (function () {
     }
   }
 
-  module.goTo = async function (){
+  module.processSize = async function (){
+    if(size_count >= config.sizes.length-1){
+      //All the sizes are done. Prepare for keyframe rendering
+      module.setScale(false, function(){
+        module.resize(config.video.size.width, config.video.size.height, function(){
+          module.setScale(true, function(){
+            module.resize(config.video.output.width, config.video.output.height, function(){
+              module.goTo(0, module.snap)
+            })
+          })
+        })
+      })
+
+    }else{
+      module.setScale(false, function(){
+        module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height, function(){
+          module.setScale(true, function(){
+            module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height, function(){
+              try {
+                const load = nightmare
+                  .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
+
+                await nightmare.then(function (result) {
+
+                  if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
+                    gm()
+                      .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
+                      .background('#ffffff')
+                      .gravity('center')
+                      .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                      .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
+                        if (err) throw err;
+                        
+                        size_count++
+                        module.processSize()
+                      });
+
+                  }else{
+                    size_count++
+                    module.processSize()
+                  }
+
+                }).catch(function (error) {
+                  console.error('Failed:', error);
+                })
+
+              } catch (error) {
+                throw error;
+              }
+            })
+          })
+        })
+      })
+    }
+  }
+
+  module.goTo = async function (keyframe, nextFunc){
     try {
       const load = nightmare
         .evaluate(function (position) {
           init(position, function(position){return position;});
-        }, (job.snap_count / job.data.params.duration))
+        }, keyframe)
 
       await nightmare.then(function (result) {
-        module.snap();
+        nextFunc()
       })
       .catch(function (error) {
         console.error('Failed:', error);
