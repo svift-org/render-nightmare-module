@@ -205,30 +205,29 @@ var render = (function () {
               try {
                 const load = nightmare
                   .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
+                  .then(function (result) {
 
-                await nightmare.then(function (result) {
+                    if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
+                      gm()
+                        .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
+                        .background('#ffffff')
+                        .gravity('center')
+                        .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                        .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
+                          if (err) throw err;
+                          
+                          size_count++
+                          module.processSize()
+                        });
 
-                  if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
-                    gm()
-                      .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
-                      .background('#ffffff')
-                      .gravity('center')
-                      .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
-                      .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
-                        if (err) throw err;
-                        
-                        size_count++
-                        module.processSize()
-                      });
+                    }else{
+                      size_count++
+                      module.processSize()
+                    }
 
-                  }else{
-                    size_count++
-                    module.processSize()
-                  }
-
-                }).catch(function (error) {
-                  console.error('Failed:', error);
-                })
+                  }).catch(function (error) {
+                    console.error('Failed:', error);
+                  })
 
               } catch (error) {
                 throw error;
