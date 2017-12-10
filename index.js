@@ -184,6 +184,8 @@ var render = (function () {
 
   module.processSize = async function (){
     if(size_count >= config.sizes.length-1){
+      update_callback('social', 1)
+
       //All the sizes are done. Prepare for keyframe rendering
       module.setScale(false, function(){
         module.resize(config.video.size.width, config.video.size.height, function(){
