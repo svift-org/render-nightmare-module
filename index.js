@@ -37,7 +37,7 @@ var render = (function () {
     try {
       const load = nightmare
         .goto(default_job.url)
-        .viewport(default_job.data.params.width, default_job.data.params.height)
+        .viewport(config.video.size.width, config.video.size.height)
 
       nightmare.evaluate(function(){
         //wait for page to finish loading
@@ -126,7 +126,7 @@ var render = (function () {
 
     try {
       const load = nightmare
-        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:job.data.params.width,height:job.data.params.height})
+        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
 
       await nightmare.then(function (result) {
         update_callback('png', (job.snap_count / job.data.params.duration))
@@ -143,11 +143,11 @@ var render = (function () {
 
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
 
-  module.cleanSVG = function (svg){
+  module.cleanSVG = function (svg, width, height){
     var replace = [
       ['sans-serif', 'Verdana'],
-      ['width="100%"', 'width="'+job.data.params.width+'"'],
-      ['height="100%"', 'height="'+job.data.params.height+'"'],
+      ['width="100%"', 'width="'+width+'"'],
+      ['height="100%"', 'height="'+height+'"'],
       ['<svg', '<svg xmlns="http://www.w3.org/2000/svg"']
     ]
 
@@ -166,7 +166,7 @@ var render = (function () {
         })
 
       await nightmare.then(function (result) {
-        fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result), 'utf8')
+        fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
         if(job.snap_count < job.data.params.duration){
           update_callback('svg', (job.snap_count / job.data.params.duration))
