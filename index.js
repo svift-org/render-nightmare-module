@@ -34,7 +34,6 @@ var render = (function () {
     config = _config
     render_callback = callback
     update_callback = _update_callback
-    console.log('module.init', config, config.video.size.width)
     try {
       const load = nightmare
         .goto(default_job.url)
@@ -124,8 +123,6 @@ var render = (function () {
     job.snap_count++;
 
     try {
-      console.log('module.snap', config.video.output.width)
-
       const load = nightmare
         .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
 
@@ -167,7 +164,6 @@ var render = (function () {
         })
 
       await nightmare.then(function (result) {
-        console.log('module.getSVG', config.video.size.width)
         fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
         if(job.snap_count < job.data.params.duration){
@@ -190,10 +186,8 @@ var render = (function () {
     if(size_count >= config.sizes.length-1){
       //All the sizes are done. Prepare for keyframe rendering
       module.setScale(false, function(){
-        console.log('module.processSize1', config.video.size.width)
         module.resize(config.video.size.width, config.video.size.height, function(){
           module.setScale(true, function(){
-            console.log('module.processSize2', config.video.output.width)
             module.resize(config.video.output.width, config.video.output.height, function(){
               module.goTo(0, module.snap)
             })
@@ -203,18 +197,13 @@ var render = (function () {
 
     }else{
       module.setScale(false, function(){
-        console.log('module.processSize3', config.sizes[size_count].size.width)
         module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height, function(){
           module.setScale(true, function(){
-            console.log('module.processSize4', config.sizes[size_count].scale.width)
             module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height, function(){
               try {
-                console.log('module.processSize5', config.sizes[size_count].scale.width)
                 const load = nightmare
                   .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
                   .then(function (result) {
-
-                    console.log('module.processSize6', config.sizes[size_count].output.width)
                     if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
                       gm()
                         .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
