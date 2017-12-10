@@ -7,8 +7,7 @@
 'use strict';
 
 var fs = require('fs'),
-  gm = require('gm'),
-  config = require('./config.json')
+  gm = require('gm')
 
 var Nightmare = require('nightmare')
 var nightmare = Nightmare()
@@ -27,10 +26,12 @@ var render = (function () {
     },
     render_callback = null,
     update_callback = null,
-    size_count = 0
+    size_count = 0,
+    config = null
 
   //Load template and scripts+styles
-  module.init = async function (callback, _update_callback) {
+  module.init = async function (callback, _update_callback, _config) {
+    config = _config
     render_callback = callback
     update_callback = _update_callback
     try {
