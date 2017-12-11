@@ -204,35 +204,37 @@ var render = (function () {
         module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height, function(){
           module.setScale(true, function(){
             module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height, function(){
-              try {
-                const load = nightmare
-                  .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
-                  .then(function (result) {
-                    if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
-                      gm()
-                        .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
-                        .gravity('Center')
-                        .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
-                        .background('#ffffff')
-                        .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
-                          if (err) throw err;
-                          
-                          size_count++
-                          module.processSize()
-                        });
+              module.goTo(1, function(){
+                try {
+                  const load = nightmare
+                    .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
+                    .then(function (result) {
+                      if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
+                        gm()
+                          .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
+                          .gravity('Center')
+                          .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                          .background('#ffffff')
+                          .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
+                            if (err) throw err;
+                            
+                            size_count++
+                            module.processSize()
+                          });
 
-                    }else{
-                      size_count++
-                      module.processSize()
-                    }
+                      }else{
+                        size_count++
+                        module.processSize()
+                      }
 
-                  }).catch(function (error) {
-                    console.error('Failed:', error);
-                  })
+                    }).catch(function (error) {
+                      console.error('Failed:', error);
+                    })
 
-              } catch (error) {
-                throw error;
-              }
+                } catch (error) {
+                  throw error;
+                }
+              })
             })
           })
         })
