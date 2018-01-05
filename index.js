@@ -191,9 +191,11 @@ var render = (function () {
       //All the sizes are done. Prepare for keyframe rendering
       module.setScale(false, function(){
         module.resize(config.video.size.width, config.video.size.height, function(){
-          module.setScale(true, function(){
-            module.resize(config.video.output.width, config.video.output.height, function(){
-              module.goTo(0, module.snap)
+          module.reset(function(){
+            module.setScale(true, function(){
+              module.resize(config.video.output.width, config.video.output.height, function(){
+                module.goTo(0, module.snap)
+              })
             })
           })
         })
@@ -239,6 +241,25 @@ var render = (function () {
           })
         })
       })
+    }
+  }
+
+  module.reset = async function (nextFunc){
+    try {
+      const load = nightmare
+        .evaluate(function () {
+          reset();
+        })
+
+      await nightmare.then(function (result) {
+        nextFunc()
+      })
+      .catch(function (error) {
+        console.error('Failed:', error);
+      })
+
+    } catch (error) {
+      throw error;
     }
   }
 
