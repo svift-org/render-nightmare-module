@@ -248,6 +248,7 @@ var render = (function () {
     try {
       const load = nightmare
         .evaluate(function () {
+          console.log('reset');
           reset();
         })
 
