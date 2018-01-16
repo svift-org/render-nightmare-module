@@ -189,7 +189,7 @@ var render = (function () {
   }
 
   module.processSize = async function (){
-    if(size_count >= config.sizes.length-1){
+    if(size_count >= config.sizes.length){
       social_callback()
 
       //All the sizes are done. Prepare for keyframe rendering
