@@ -62,13 +62,12 @@ var render = (function () {
         .viewport(width, height)
 
       await nightmare.evaluate(function(){
-        //wait for page to finish loading
-        return false
+        callback(function(){ return true; })
+      }).then(result=>{
+        callback()  
       }).catch(reason => {
         console.error('render-nightmare:resize', reason)
-      })
-
-      callback()
+      })      
 
     } catch (error) {
       throw error;
@@ -79,18 +78,16 @@ var render = (function () {
     try{
       const load = nightmare
         .evaluate(function (data) {
-          setScale(data, function(){});
+          setScale(data, function(){ return true; });
         }, scale)
         .catch(reason => {
           console.error('render-nightmare:setScale1', reason)
         })
 
-      await nightmare.evaluate(function(){ return false; })
-        .catch(reason => {
-          console.error('render-nightmare:setScale2', reason)
+      await nightmare.then(function(result){ 
+          callback()
         })
-
-      callback()
+      
 
     } catch (error) {
       throw error;
