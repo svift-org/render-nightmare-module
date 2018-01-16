@@ -6,9 +6,8 @@
 
 'use strict';
 
-var fs = require('fs')
-//Acquire from root
-var config = require('../../config.json')
+var fs = require('fs'),
+  gm = require('gm')
 
 var Nightmare = require('nightmare')
 var nightmare = Nightmare()
@@ -21,21 +20,26 @@ var render = (function () {
     default_job = {
       snap_count : 0,
       data: {params:{width:500,height:500}},
-      url: 'https://svift-backend.herokuapp.com/'+config.secret+'/vis',
+      url: 'https://'+process.env.HEROKU_URL+'.herokuapp.com/'+process.env.EXPRESS_SECRET+'/vis',
       id: null,
       folder: null
     },
     render_callback = null,
-    update_callback = null
+    update_callback = null,
+    social_callback = null,
+    size_count = 0,
+    config = null
 
   //Load template and scripts+styles
-  module.init = async function (callback, _update_callback) {
+  module.init = async function (callback, _update_callback, _social_callback, _config) {
+    config = _config
     render_callback = callback
     update_callback = _update_callback
+    social_callback = _social_callback
     try {
       const load = nightmare
         .goto(default_job.url)
-        .viewport(default_job.data.params.width, default_job.data.params.height)
+        .viewport(config.video.size.width, config.video.size.height)
 
       nightmare.evaluate(function(){
         //wait for page to finish loading
@@ -69,7 +73,24 @@ var render = (function () {
     }    
   }
 
+  module.setScale = async function (scale, callback){
+    try{
+      const load = nightmare
+        .evaluate(function (data) {
+          setScale(data, function(){});
+        }, scale)
+
+      await nightmare.evaluate(function(){ return false; })
+
+      callback()
+
+    } catch (error) {
+      throw error;
+    }    
+  }
+
   module.render = async function(data, id, folder){
+    size_count = 0
     job = {}
     for(var key in default_job){
       job[key] = default_job[key]
@@ -78,8 +99,6 @@ var render = (function () {
     job.data = data
     job.folder = folder
     if(!('duration' in job.data.params)){ job.data.params['duration'] = 100 }
-    if(!('width' in job.data.params)){ job.data.params['width'] = 500 }
-    if(!('height' in job.data.params)){ job.data.params['height'] = 500 }
 
     try {
       const load = nightmare
@@ -88,7 +107,8 @@ var render = (function () {
         }, data)
 
       await nightmare.then(function (result) {
-        module.resize(job.data.params.width, job.data.params.height, module.snap)
+
+        module.goTo(1, module.processSize)
 
       }).catch(function (error) {
         console.error('Failed:', error);
@@ -106,7 +126,7 @@ var render = (function () {
 
     try {
       const load = nightmare
-        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:job.data.params.width,height:job.data.params.height})
+        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
 
       await nightmare.then(function (result) {
         update_callback('png', (job.snap_count / job.data.params.duration))
@@ -127,11 +147,11 @@ var render = (function () {
 
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
 
-  module.cleanSVG = function (svg){
+  module.cleanSVG = function (svg, width, height){
     var replace = [
       ['sans-serif', 'Verdana'],
-      ['width="100%"', 'width="'+job.data.params.width+'"'],
-      ['height="100%"', 'height="'+job.data.params.height+'"'],
+      ['width="100%"', 'width="'+width+'"'],
+      ['height="100%"', 'height="'+height+'"'],
       ['<svg', '<svg xmlns="http://www.w3.org/2000/svg"']
     ]
 
@@ -150,11 +170,11 @@ var render = (function () {
         })
 
       await nightmare.then(function (result) {
-        fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result), 'utf8')
+        fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
         if(job.snap_count < job.data.params.duration){
           update_callback('svg', (job.snap_count / job.data.params.duration))
-          module.goTo()
+          module.goTo((job.snap_count / job.data.params.duration), module.snap)
         }else{
           render_callback('renderDone');
         }
@@ -168,15 +188,95 @@ var render = (function () {
     }
   }
 
-  module.goTo = async function (){
+  module.processSize = async function (){
+    if(size_count >= config.sizes.length-1){
+      social_callback()
+
+      //All the sizes are done. Prepare for keyframe rendering
+      module.setScale(false, function(){
+        module.resize(config.video.size.width, config.video.size.height, function(){
+          module.reset(function(){
+            module.setScale(true, function(){
+              module.resize(config.video.output.width, config.video.output.height, function(){
+                module.goTo(0, module.snap)
+              })
+            })
+          })
+        })
+      })
+
+    }else{
+      module.setScale(false, function(){
+        module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height, function(){
+          module.setScale(true, function(){
+            module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height, function(){
+              module.goTo(1, function(){
+                try {
+                  const load = nightmare
+                    .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
+                    .then(function (result) {
+                      if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
+                        gm()
+                          .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
+                          .gravity('Center')
+                          .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                          .background('#ffffff')
+                          .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
+                            if (err) throw err;
+                            
+                            size_count++
+                            module.processSize()
+                          });
+
+                      }else{
+                        size_count++
+                        module.processSize()
+                      }
+
+                    }).catch(function (error) {
+                      console.error('Failed:', error);
+                    })
+
+                } catch (error) {
+                  throw error;
+                }
+              })
+            })
+          })
+        })
+      })
+    }
+  }
+
+  module.reset = async function (nextFunc){
+    try {
+      const load = nightmare
+        .evaluate(function () {
+          console.log('reset');
+          reset();
+        })
+
+      await nightmare.then(function (result) {
+        nextFunc()
+      })
+      .catch(function (error) {
+        console.error('Failed:', error);
+      })
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  module.goTo = async function (keyframe, nextFunc){
     try {
       const load = nightmare
         .evaluate(function (position) {
           init(position, function(position){return position;});
-        }, (job.snap_count / job.data.params.duration))
+        }, keyframe)
 
       await nightmare.then(function (result) {
-        module.snap();
+        nextFunc()
       })
       .catch(function (error) {
         console.error('Failed:', error);
