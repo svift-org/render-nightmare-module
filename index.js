@@ -47,7 +47,7 @@ var render = (function () {
       }).then(function(){
         render_callback('initDone')
       }).catch(reason => {
-        console.error(reason)
+        console.error('render-nightmare:init', reason)
       })
 
     } catch (error) {
@@ -64,6 +64,8 @@ var render = (function () {
       await nightmare.evaluate(function(){
         //wait for page to finish loading
         return false
+      }).catch(reason => {
+        console.error('render-nightmare:resize', reason)
       })
 
       callback()
@@ -79,8 +81,14 @@ var render = (function () {
         .evaluate(function (data) {
           setScale(data, function(){});
         }, scale)
+        .catch(reason => {
+          console.error('render-nightmare:setScale1', reason)
+        })
 
       await nightmare.evaluate(function(){ return false; })
+        .catch(reason => {
+          console.error('render-nightmare:setScale2', reason)
+        })
 
       callback()
 
@@ -105,14 +113,16 @@ var render = (function () {
         .evaluate(function (data) {
           vis(data, function(){});
         }, data)
+        .catch(reason => {
+          console.error('render-nightmare:render1', reason)
+        })
 
       await nightmare.then(function (result) {
 
         module.goTo(1, module.processSize)
 
-      }).catch(function (error) {
-        console.error('Failed:', error);
-
+      }).catch(reason => {
+        console.error('render-nightmare:render2', reason)
       })
 
     } catch (error) {
@@ -127,6 +137,9 @@ var render = (function () {
     try {
       const load = nightmare
         .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
+        .catch(reason => {
+          console.error('render-nightmare:snap1', reason)
+        })
 
       await nightmare.then(function (result) {
         update_callback('png', (job.snap_count / job.data.params.duration))
@@ -135,9 +148,8 @@ var render = (function () {
         }else{
           module.goTo((job.snap_count / job.data.params.duration), module.snap)
         }
-      }).catch(function (error) {
-        console.error('Failed:', error);
-
+      }).catch(reason => {
+        console.error('render-nightmare:snap2', reason)
       })
 
     } catch (error) {
@@ -167,7 +179,9 @@ var render = (function () {
       const load = nightmare
         .evaluate(function () {
           return getSVG()
-        })
+        }).catch(reason => {
+        console.error('render-nightmare:getSVG1', reason)
+      })
 
       await nightmare.then(function (result) {
         fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
@@ -179,8 +193,8 @@ var render = (function () {
           render_callback('renderDone');
         }
 
-      }).catch(function (error) {
-        console.error('Failed:', error);
+      }).catch(reason => {
+        console.error('render-nightmare:getSVG2', reason)
       })
 
     } catch (error) {
@@ -233,8 +247,8 @@ var render = (function () {
                         module.processSize()
                       }
 
-                    }).catch(function (error) {
-                      console.error('Failed:', error);
+                    }).catch(reason => {
+                      console.error('render-nightmare:processSize', reason)
                     })
 
                 } catch (error) {
@@ -254,13 +268,15 @@ var render = (function () {
         .evaluate(function () {
           console.log('reset');
           reset();
+        }).catch(reason => {
+          console.error('render-nightmare:reset1', reason)
         })
 
       await nightmare.then(function (result) {
         nextFunc()
       })
-      .catch(function (error) {
-        console.error('Failed:', error);
+      .catch(reason => {
+        console.error('render-nightmare:reset2', reason)
       })
 
     } catch (error) {
@@ -274,12 +290,15 @@ var render = (function () {
         .evaluate(function (position) {
           init(position, function(position){return position;});
         }, keyframe)
+        .catch(reason => {
+          console.error('render-nightmare:goTo1', reason)
+        })
 
       await nightmare.then(function (result) {
         nextFunc()
       })
-      .catch(function (error) {
-        console.error('Failed:', error);
+      .catch(reason => {
+        console.error('render-nightmare:goTo2', reason)
       })
 
     } catch (error) {
