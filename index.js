@@ -69,9 +69,6 @@ var render = (function () {
         console.error('render-nightmare:resize', reason)
       })
 
-    } catch (error) {
-      throw error;
-    }    
   }
 
   module.setScale = async function (scale, callback){
