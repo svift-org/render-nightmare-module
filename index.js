@@ -110,7 +110,11 @@ var render = (function () {
 
       await nightmare.then(function (result) {
         update_callback('png', (job.snap_count / job.data.params.duration))
-        module.getSVG()
+        if(job.snap_count == job.data.params.duration){
+          module.getSVG()
+        }else{
+          module.goTo()  
+        }
       }).catch(function (error) {
         console.error('Failed:', error);
 
