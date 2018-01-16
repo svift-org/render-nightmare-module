@@ -133,7 +133,7 @@ var render = (function () {
         if(job.snap_count == job.data.params.duration){
           module.getSVG()
         }else{
-          module.goTo()  
+          module.goTo((job.snap_count / job.data.params.duration), module.snap)
         }
       }).catch(function (error) {
         console.error('Failed:', error);
