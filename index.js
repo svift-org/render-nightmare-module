@@ -63,7 +63,7 @@ var render = (function () {
       .evaluate(function(callback){
         //wait for page to finish loading
         return callback
-      })then(callback => {
+      }).then(callback => {
         callback()
       }).catch(reason => {
         console.error('render-nightmare:resize', reason)
