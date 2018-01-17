@@ -113,14 +113,9 @@ var render = (function () {
   module.snap = async function (){
     job.snap_count++;
 
-    try {
-      const load = nightmare
-        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
-        .catch(reason => {
-          console.error('render-nightmare:snap1', reason)
-        })
-
-      await nightmare.then(function (result) {
+    nightmare
+      .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
+      .then(function (result) {
         update_callback('png', (job.snap_count / job.data.params.duration))
         if(job.snap_count == job.data.params.duration){
           module.getSVG()
@@ -128,12 +123,8 @@ var render = (function () {
           module.goTo((job.snap_count / job.data.params.duration), module.snap)
         }
       }).catch(reason => {
-        console.error('render-nightmare:snap2', reason)
+        console.error('render-nightmare:snap', reason)
       })
-
-    } catch (error) {
-      throw error;
-    }
   }
 
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
