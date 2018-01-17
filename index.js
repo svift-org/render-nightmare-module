@@ -152,6 +152,8 @@ var render = (function () {
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
 
   module.cleanSVG = function (svg, width, height){
+    if(svg == undefined) return undefined
+
     var replace = [
       ['sans-serif', 'Verdana'],
       ['width="100%"', 'width="'+width+'"'],
