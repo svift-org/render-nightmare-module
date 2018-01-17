@@ -57,6 +57,8 @@ var render = (function () {
   }
 
   module.resize = async function (width, height, callback){
+    var _callback = callback
+
     nightmare
       .viewport(width, height)
       .evaluate(function(){
@@ -64,9 +66,8 @@ var render = (function () {
         return false
       })
       .then(result => {
-        callback()
+        _callback()
       })
-      .bind(this)
       .catch(reason => {
         console.error('render-nightmare:resize', reason)
       })
@@ -282,14 +283,14 @@ var render = (function () {
   }
 
   module.goTo = async function (keyframe, nextFunc){
+    var _nextFunc = nextFunc
     nightmare
       .evaluate(function (position) {
         init(position, function(position){return position;});
       }, keyframe)
       .then(function (result) {
-        nextFunc()
+        _nextFunc()
       })
-      .bind(this)
       .catch(reason => {
         console.error('render-nightmare:goTo', reason)
       })
