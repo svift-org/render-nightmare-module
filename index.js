@@ -161,7 +161,7 @@ var render = (function () {
         }
 
       }).catch(reason => {
-        console.error('render-nightmare:getSVG2', reason)
+        console.error('render-nightmare:getSVG', reason)
       })
   }
 
