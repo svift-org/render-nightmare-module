@@ -74,23 +74,18 @@ var render = (function () {
   }
 
   module.setScale = async function (scale, callback){
-    try{
-      const load = nightmare
-        .evaluate(function (data) {
-          setScale(data, function(){ return true; });
-        }, scale)
-        .catch(reason => {
-          console.error('render-nightmare:setScale1', reason)
-        })
+    var _callback = callback
 
-      await nightmare.then(function(result){ 
-          callback()
-        })
-      
-
-    } catch (error) {
-      throw error;
-    }    
+    nightmare
+      .evaluate(function (data, done) {
+        setScale(data, done);
+      }, scale)
+      .then(function(result){ 
+        _callback()
+      })
+      .catch(reason => {
+        console.error('render-nightmare:setScale', reason)
+      })
   }
 
   module.render = async function(data, id, folder){
@@ -261,33 +256,28 @@ var render = (function () {
   }
 
   module.reset = async function (nextFunc){
-    try {
-      const load = nightmare
-        .evaluate(function () {
-          console.log('reset');
-          reset();
-        }).catch(reason => {
-          console.error('render-nightmare:reset1', reason)
-        })
+    var _nextFunc = nextFunc
 
-      await nightmare.then(function (result) {
-        nextFunc()
+    nightmare
+      .evaluate(function (done) {
+        console.log('reset');
+        reset(done);
+      }).then(function (result) {
+        _nextFunc()
       })
       .catch(reason => {
-        console.error('render-nightmare:reset2', reason)
+        console.error('render-nightmare:reset', reason)
       })
-
-    } catch (error) {
-      throw error;
-    }
   }
 
   module.goTo = async function (keyframe, nextFunc){
     var _nextFunc = nextFunc
+
     nightmare
-      .evaluate(function (position) {
-        init(position, function(position){return position;});
+      .evaluate(function (position, done) {
+        init(position, done)
       }, keyframe)
+      .wait()
       .then(function (result) {
         _nextFunc()
       })
