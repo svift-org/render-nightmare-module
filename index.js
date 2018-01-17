@@ -57,14 +57,15 @@ var render = (function () {
   }
 
   module.resize = async function (width, height, callback){
+    var _callback = callback
 
     nightmare
       .viewport(width, height)
-      .evaluate(function(callback){
+      .evaluate(function(){
         //wait for page to finish loading
-        return callback
-      }).then(callback => {
-        callback()
+        return false
+      }).then(result => {
+        _callback()
       }).catch(reason => {
         console.error('render-nightmare:resize', reason)
       })
