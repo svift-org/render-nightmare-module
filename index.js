@@ -62,9 +62,11 @@ var render = (function () {
       .evaluate(function(){
         //wait for page to finish loading
         return false
-      }).then(result => {
+      })
+      .bind(this)
+      .then(result => {
         callback()
-      }.bind(callback)).catch(reason => {
+      }).catch(reason => {
         console.error('render-nightmare:resize', reason)
       })
   }
@@ -279,25 +281,17 @@ var render = (function () {
   }
 
   module.goTo = async function (keyframe, nextFunc){
-    try {
-      const load = nightmare
-        .evaluate(function (position) {
-          init(position, function(position){return position;});
-        }, keyframe)
-        .catch(reason => {
-          console.error('render-nightmare:goTo1', reason)
-        })
-
-      await nightmare.then(function (result) {
+    nightmare
+      .evaluate(function (position) {
+        init(position, function(position){return position;});
+      }, keyframe)
+      .bind(this)
+      .then(function (result) {
         nextFunc()
       })
       .catch(reason => {
-        console.error('render-nightmare:goTo2', reason)
+        console.error('render-nightmare:goTo', reason)
       })
-
-    } catch (error) {
-      throw error;
-    }
   }
 
   module.formatNumber = function (n) {
