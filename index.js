@@ -99,27 +99,15 @@ var render = (function () {
     job.folder = folder
     if(!('duration' in job.data.params)){ job.data.params['duration'] = 100 }
 
-    try {
-      const load = nightmare
-        .evaluate(function (data) {
-          vis(data, function(){});
-        }, data)
-        .catch(reason => {
-          console.error('render-nightmare:render1', reason)
-        })
-
-      await nightmare.then(function (result) {
-
+    nightmare
+      .evaluate(function (data, done) {
+        vis(data, done);
+      }, data)
+      .then(function (result) {
         module.goTo(1, module.processSize)
-
       }).catch(reason => {
         console.error('render-nightmare:render2', reason)
       })
-
-    } catch (error) {
-      //TODO: Try again?
-      throw error;
-    }
   }
 
   module.snap = async function (){
@@ -168,15 +156,10 @@ var render = (function () {
   }
 
   module.getSVG = async function (){
-    try {
-      const load = nightmare
-        .evaluate(function () {
-          return getSVG()
-        }).catch(reason => {
-        console.error('render-nightmare:getSVG1', reason)
-      })
-
-      await nightmare.then(function (result) {
+    nightmare
+      .evaluate(function () {
+        return getSVG()
+      }).then(function (result) {
         fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
         if(job.snap_count < job.data.params.duration){
@@ -189,10 +172,6 @@ var render = (function () {
       }).catch(reason => {
         console.error('render-nightmare:getSVG2', reason)
       })
-
-    } catch (error) {
-      throw error;
-    }
   }
 
   module.processSize = async function (){
@@ -277,7 +256,7 @@ var render = (function () {
       .evaluate(function (position, done) {
         init(position, done)
       }, keyframe)
-      .wait()
+      .wait(100)
       .then(function (result) {
         _nextFunc()
       })
