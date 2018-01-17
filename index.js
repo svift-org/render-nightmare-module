@@ -63,10 +63,11 @@ var render = (function () {
         //wait for page to finish loading
         return false
       })
-      .bind(this)
       .then(result => {
         callback()
-      }).catch(reason => {
+      })
+      .bind(this)
+      .catch(reason => {
         console.error('render-nightmare:resize', reason)
       })
   }
@@ -285,10 +286,10 @@ var render = (function () {
       .evaluate(function (position) {
         init(position, function(position){return position;});
       }, keyframe)
-      .bind(this)
       .then(function (result) {
         nextFunc()
       })
+      .bind(this)
       .catch(reason => {
         console.error('render-nightmare:goTo', reason)
       })
