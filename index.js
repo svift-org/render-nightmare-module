@@ -106,7 +106,7 @@ var render = (function () {
       .then(function (result) {
         module.goTo(1, module.processSize)
       }).catch(reason => {
-        console.error('render-nightmare:render2', reason)
+        console.error('render-nightmare:render', reason)
       })
   }
 
