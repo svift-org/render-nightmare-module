@@ -119,8 +119,12 @@ var render = (function () {
         .then(()=>{
           return module.processSize()
         })
+        .then(()=>{
+          resolve()
+        })
         .catch(reason => {
           console.error('render-nightmare:render', reason)
+          reject()
         })
       })
   }
@@ -261,6 +265,7 @@ var render = (function () {
             return module.goTo(1)
           })
           .then(()=>{
+            return new Promise((resolve, reject) => {
               nightmare
                 .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
                 .then(function (result) {
@@ -284,8 +289,9 @@ var render = (function () {
 
                   }).catch(reason => {
                     console.error('render-nightmare:processSize', reason)
+                    reject()
                   })
-
+            })
           })
           .then(()=>{
             resolve()
@@ -316,7 +322,7 @@ var render = (function () {
     })
   }
 
-  module.goTo = (keyframe, nextFunc) => {
+  module.goTo = (keyframe) => {
     return new Promise((resolve, reject) => {
 
       nightmare
@@ -324,9 +330,6 @@ var render = (function () {
           init(position, done)
         }, keyframe)
         .wait(100)
-        .then(function (result) {
-          return nextFunc()
-        })
         .then(function (result) {
           resolve()
         })
