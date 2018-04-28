@@ -119,8 +119,10 @@ var render = (function () {
       .then(function (result) {
         update_callback('png', (job.snap_count / job.data.params.duration))
         if(job.snap_count == job.data.params.duration){
+          console.log('snap-getsvg', job.snap_count, job.data.params.duration)
           module.getSVG()
         }else{
+          console.log('snap-goto', job.snap_count, job.data.params.duration)
           module.goTo((job.snap_count / job.data.params.duration), module.snap)
         }
       }).catch(reason => {
