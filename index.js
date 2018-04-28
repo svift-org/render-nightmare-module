@@ -123,6 +123,7 @@ var render = (function () {
 
   module.snap = async function (){
     job.snap_count++;
+    console.log('snap', job.snap_count)
 
     try {
       const load = nightmare
@@ -248,7 +249,6 @@ var render = (function () {
     try {
       const load = nightmare
         .evaluate(function () {
-          console.log('reset');
           reset();
         })
 
