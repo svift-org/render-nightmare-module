@@ -254,6 +254,8 @@ var render = (function () {
   module.goTo = async function (keyframe, nextFunc){
     var _nextFunc = nextFunc
 
+    console.log('goTo', keyframe)
+
     nightmare
       .evaluate(function (position, done) {
         init(position, done)
