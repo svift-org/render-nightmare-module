@@ -10,7 +10,9 @@ var fs = require('fs'),
   gm = require('gm')
 
 var Nightmare = require('nightmare')
-var nightmare = Nightmare()
+var nightmare = Nightmare().on('page', function(type, message, stack){
+  console.log(type, message)
+})
 
 var render = (function () {
  
