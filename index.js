@@ -286,9 +286,6 @@ var render = (function () {
                     console.error('render-nightmare:processSize', reason)
                   })
 
-              } catch (error) {
-                throw error;
-              }
           })
           .then(()=>{
             resolve()
