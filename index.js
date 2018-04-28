@@ -227,16 +227,16 @@ var render = (function () {
   }
 
   module.reset = async function (nextFunc){
-<<<<<<< HEAD
-    try {
-      const load = nightmare
-        .evaluate(function () {
-          reset();
-        })
+// <<<<<<< HEAD
+//     try {
+//       const load = nightmare
+//         .evaluate(function () {
+//           reset();
+//         })
 
-      await nightmare.then(function (result) {
-        nextFunc()
-=======
+//       await nightmare.then(function (result) {
+//         nextFunc()
+// =======
     var _nextFunc = nextFunc
 
     nightmare
@@ -245,7 +245,6 @@ var render = (function () {
         reset(done);
       }).then(function (result) {
         _nextFunc()
->>>>>>> 7d314a4b2dc382ce55eff659f2c334f78758d2ae
       })
       .catch(reason => {
         console.error('render-nightmare:reset', reason)
