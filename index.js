@@ -10,7 +10,7 @@ var fs = require('fs'),
   gm = require('gm')
 
 var Nightmare = require('nightmare')
-var nightmare = Nightmare()
+var nightmare = Nightmare({show:true})
 
 var render = (function () {
  
