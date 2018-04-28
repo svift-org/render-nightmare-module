@@ -112,7 +112,7 @@ var render = (function () {
 
   module.snap = async function (){
     job.snap_count++;
-    console.log('snap', job.snap_count)
+    console.log('snap', job.snap_count, job.data.params.duration)
 
     nightmare
       .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
