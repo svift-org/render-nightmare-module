@@ -36,59 +36,68 @@ var render = (function () {
     render_callback = callback
     update_callback = _update_callback
     social_callback = _social_callback
-    try {
-      const load = nightmare
-        .goto(default_job.url)
-        .viewport(config.video.size.width, config.video.size.height)
 
-      nightmare.evaluate(function(){
-        //wait for page to finish loading
-        return false
-      }).then(function(){
-        render_callback('initDone')
-      }).catch(reason => {
-        console.error('render-nightmare:init', reason)
-      })
+    return new Promise((resolve, reject) => {
 
-    } catch (error) {
-      //TODO: Try again?
-      throw error;
-    }
+      try {
+        const load = nightmare
+          .goto(default_job.url)
+          .viewport(config.video.size.width, config.video.size.height)
+
+        nightmare.evaluate(function(){
+          //wait for page to finish loading
+          return false
+        }).then(function(){
+          resolve()
+        }).catch(reason => {
+          console.error('render-nightmare:init', reason)
+          reject()
+        })
+
+      } catch (error) {
+        //TODO: Try again?
+        throw error;
+        reject()
+      }
+
+    })
   }
 
-  module.resize = async function (width, height, callback){
-    var _callback = callback
-
-    nightmare
-      .viewport(width, height)
-      .evaluate(function(){
-        //wait for page to finish loading
-        return false
-      })
-      .then(result => {
-        _callback()
-      })
-      .catch(reason => {
-        console.error('render-nightmare:resize', reason)
-      })
+  module.resize = (width, height) => {
+    return new Promise((resolve, reject) => {
+      nightmare
+        .viewport(width, height)
+        .evaluate(function(){
+          //wait for page to finish loading
+          return false
+        })
+        .then(result => {
+          resolve()
+        })
+        .catch(reason => {
+          console.error('render-nightmare:resize', reason)
+          reject()
+        })  
+    })
   }
 
-  module.setScale = async function (scale, callback){
-    var _callback = callback
-
-    nightmare
-      .evaluate(function (data, done) {
-        setScale(data, done);
-      }, scale)
-      .then(function(result){ 
-        _callback()
-      })
-      .catch(reason => {
-        console.error('render-nightmare:setScale', reason)
-      })
+  module.setScale = scale => {
+    return new Promise((resolve, reject) => {
+      nightmare
+        .evaluate(function (data, done) {
+          setScale(data, done);
+        }, scale)
+        .then(function(result){ 
+          resolve()
+        })
+        .catch(reason => {
+          console.error('render-nightmare:setScale', reason)
+          reject()
+        })
+    })
   }
 
-  module.render = async function(data, id, folder){
+  module.render = (data, id, folder) => {
     size_count = 0
     job = {}
     for(var key in default_job){
@@ -99,36 +108,55 @@ var render = (function () {
     job.folder = folder
     if(!('duration' in job.data.params)){ job.data.params['duration'] = 100 }
 
-    nightmare
-      .evaluate(function (data, done) {
-        vis(data, done);
-      }, data)
-      .then(function (result) {
-        module.goTo(1, module.processSize)
-      }).catch(reason => {
-        console.error('render-nightmare:render', reason)
+    return new Promise((resolve, reject) => {
+      nightmare
+        .evaluate(function (data, done) {
+          vis(data, done);
+        }, data)
+        .then(function (result) {
+          return module.goTo(1)
+        })
+        .then(()=>{
+          return module.processSize()
+        })
+        .catch(reason => {
+          console.error('render-nightmare:render', reason)
+        })
       })
   }
 
-  module.snap = async function (){
+  module.snap = () => {
     job.snap_count++;
-    console.log('snap', job.snap_count, job.data.params.duration)
+    
+    return new Promise((resolve, reject) => {
+      nightmare
+        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
+        .then(() => {
+          update_callback('png', (job.snap_count / job.data.params.duration))
 
-    nightmare
-      .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
-      .then(function (result) {
-        console.log('snap-screenshot')
-        update_callback('png', (job.snap_count / job.data.params.duration))
-        if(job.snap_count == job.data.params.duration){
-          console.log('snap-getsvg', job.snap_count, job.data.params.duration)
-          module.getSVG()
-        }else{
-          console.log('snap-goto', job.snap_count, job.data.params.duration)
-          module.goTo((job.snap_count / job.data.params.duration), module.snap)
-        }
-      }).catch(reason => {
-        console.error('render-nightmare:snap', reason)
-      })
+          if(job.snap_count == job.data.params.duration){
+            return module.getSVG()
+          }else{
+            return module.goTo((job.snap_count / job.data.params.duration))
+          }
+        })
+        .then(() => {
+          if(job.snap_count == job.data.params.duration){
+            return module.snap()
+          }else{
+            resolve()
+          }
+        })
+        .then(() => {
+          if(job.snap_count == job.data.params.duration){
+            resolve()
+          }
+        })
+        .catch(reason => {
+          console.error('render-nightmare:snap', reason)
+          reject()
+        })
+    })
   }
 
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
@@ -150,126 +178,167 @@ var render = (function () {
     return svg
   }
 
-  module.getSVG = async function (){
-    nightmare
-      .evaluate(function () {
-        return getSVG()
-      }).then(function (result) {
-        fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
+  module.getSVG = () => {
+    return new Promise((resolve, reject) => {
+      nightmare
+        .evaluate(function () {
+          return getSVG()
+        }).then(function (result) {
+          fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
-        if(job.snap_count < job.data.params.duration){
-          update_callback('svg', (job.snap_count / job.data.params.duration))
-          module.goTo((job.snap_count / job.data.params.duration), module.snap)
-        }else{
-          render_callback('renderDone');
-        }
-
-      }).catch(reason => {
-        console.error('render-nightmare:getSVG', reason)
-      })
+          if(job.snap_count < job.data.params.duration){
+            update_callback('svg', (job.snap_count / job.data.params.duration))
+            return module.goTo((job.snap_count / job.data.params.duration))
+          }else{
+            render_callback('renderDone');
+            resolve()
+          }
+        }).then(()=>{
+          if(job.snap_count < job.data.params.duration){
+            return module.snap()
+          }else{
+            resolve()
+          }
+        }).then(()=>{
+          resolve()
+        }).catch(reason => {
+          console.error('render-nightmare:getSVG', reason)
+          reject()
+        })
+    })
   }
 
-  module.processSize = async function (){
+  module.processSize = () => {
     if(size_count >= config.sizes.length){
       social_callback()
 
-      //All the sizes are done. Prepare for keyframe rendering
-      module.setScale(false, function(){
-        module.resize(config.video.size.width, config.video.size.height, function(){
-          module.reset(function(){
-            module.setScale(true, function(){
-              module.resize(config.video.output.width, config.video.output.height, function(){
-                module.goTo(0, module.snap)
-              })
-            })
+      return new Promise((resolve, reject) => {
+
+        //All the sizes are done. Prepare for keyframe rendering
+        module.setScale(false)
+          .then(()=>{
+            return module.resize(config.video.size.width, config.video.size.height)
           })
-        })
+          .then(()=>{
+            return module.reset()
+          })
+          .then(()=>{
+            return module.setScale(true)
+          })
+          .then(()=>{
+            return module.resize(config.video.output.width, config.video.output.height)
+          })
+          .then(()=>{
+            return module.goTo(0)
+          })
+          .then(()=>{
+            return module.snap()
+          })
+          .then(()=>{
+            resolve()
+          })
+          .catch(()=>{
+            reject()
+          });
       })
 
+
     }else{
-      module.setScale(false, function(){
-        module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height, function(){
-          module.setScale(true, function(){
-            module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height, function(){
-              module.goTo(1, function(){
-                try {
-                  const load = nightmare
-                    .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
-                    .then(function (result) {
-                      if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
-                        gm()
-                          .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
-                          .gravity('Center')
-                          .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
-                          .background('#ffffff')
-                          .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
-                            if (err) throw err;
-                            
-                            size_count++
-                            module.processSize()
-                          });
 
-                      }else{
-                        size_count++
-                        module.processSize()
-                      }
+      return new Promise((resolve, reject) => {
 
-                    }).catch(reason => {
-                      console.error('render-nightmare:processSize', reason)
-                    })
-
-                } catch (error) {
-                  throw error;
-                }
-              })
-            })
+        module.setScale(false)
+          .then(()=>{
+            return module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height)
           })
-        })
+          .then(()=>{
+            return module.setScale(true)
+          })
+          .then(()=>{
+            return module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height)
+          })
+          .then(()=>{
+            return module.goTo(1)
+          })
+          .then(()=>{
+              nightmare
+                .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
+                .then(function (result) {
+                    if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
+                      gm()
+                        .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
+                        .gravity('Center')
+                        .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                        .background('#ffffff')
+                        .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
+                          if (err) throw err;
+                          
+                          size_count++
+                          resolve()
+                        });
+
+                    }else{
+                      size_count++
+                      resolve()
+                    }
+
+                  }).catch(reason => {
+                    console.error('render-nightmare:processSize', reason)
+                  })
+
+              } catch (error) {
+                throw error;
+              }
+          })
+          .then(()=>{
+            resolve()
+          })
+          .catch(()=>{
+            reject()
+          })
+
       })
     }
   }
 
-  module.reset = async function (nextFunc){
-// <<<<<<< HEAD
-//     try {
-//       const load = nightmare
-//         .evaluate(function () {
-//           reset();
-//         })
+  module.reset = () => {
+    return new Promise((resolve, reject) => {
 
-//       await nightmare.then(function (result) {
-//         nextFunc()
-// =======
-    var _nextFunc = nextFunc
+      nightmare
+        .evaluate(function (done) {
+          console.log('reset');
+          reset(done);
+        }).then(function (result) {
+          resolve()
+        })
+        .catch(reason => {
+          console.error('render-nightmare:reset', reason)
+          reject()
+        })
 
-    nightmare
-      .evaluate(function (done) {
-        console.log('reset');
-        reset(done);
-      }).then(function (result) {
-        _nextFunc()
-      })
-      .catch(reason => {
-        console.error('render-nightmare:reset', reason)
-      })
+    })
   }
 
-  module.goTo = async function (keyframe, nextFunc){
-    var _nextFunc = nextFunc
+  module.goTo = (keyframe, nextFunc) => {
+    return new Promise((resolve, reject) => {
 
-    console.log('goTo', keyframe)
+      nightmare
+        .evaluate(function (position, done) {
+          init(position, done)
+        }, keyframe)
+        .wait(100)
+        .then(function (result) {
+          return nextFunc()
+        })
+        .then(function (result) {
+          resolve()
+        })
+        .catch(reason => {
+          console.error('render-nightmare:goTo', reason)
+          reject()
+        })
 
-    nightmare
-      .evaluate(function (position, done) {
-        init(position, done)
-      }, keyframe)
-      .wait(100)
-      .then(function (result) {
-        _nextFunc()
-      })
-      .catch(reason => {
-        console.error('render-nightmare:goTo', reason)
-      })
+    })
   }
 
   module.formatNumber = function (n) {
