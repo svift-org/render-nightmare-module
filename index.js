@@ -142,6 +142,7 @@ var render = (function () {
           nightmare
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
+              console.log('nghtmr:snap-scrnsht', snap_count)
               update_callback('png', (snap_count / job.data.params.duration))
               return module.goTo((snap_count / job.data.params.duration))
             })
