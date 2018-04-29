@@ -220,6 +220,13 @@ var render = (function () {
   }
 
   module.processSize = () => {
+
+//     function workMyCollection(arr) {
+//     return q.all(arr.map(function(item) {
+//         return doSomethingAsync(item);
+//     }));    
+// }
+
     console.log('nghtmr:processSize')
     if(size_count >= config.sizes.length){
       social_callback()
@@ -277,6 +284,7 @@ var render = (function () {
               nightmare
                 .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
                 .then(function (result) {
+                  console.log('nghtmr-processSize:screenshot')
                     if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
                       gm()
                         .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
@@ -302,7 +310,7 @@ var render = (function () {
             })
           })
           .then(()=>{
-            
+            resolve()            
           })
           .catch(()=>{
             reject()
