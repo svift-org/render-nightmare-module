@@ -54,6 +54,9 @@ var render = (function () {
           .on('log', (log, msg) => {
               console.log('nghtmr:vnt:log', log, msg)
           })
+          .on('nightmare', (log, msg) => {
+              console.log('nghtmr:vnt:nightmare', log, msg)
+          })
           .goto(default_job.url)
           .viewport(config.video.size.width, config.video.size.height)
 
@@ -244,6 +247,7 @@ var render = (function () {
               return module.goTo(1)
             })
             .then(()=>{
+              console.log('nghtmr-processSize:screenshot-before')
               return new Promise((resolve, reject) => {
                 nightmare
                   .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
