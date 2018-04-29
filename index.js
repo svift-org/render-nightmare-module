@@ -46,7 +46,13 @@ var render = (function () {
             console.log('nghtmr:vnt:page', type, message)
           })
           .on('console', (log, msg) => {
-              console.log('nghtmr:vnt:console', msg)
+              console.log('nghtmr:vnt:console', log, msg)
+          })
+          .on('javascript', (log, msg) => {
+              console.log('nghtmr:vnt:javascript', log, msg)
+          })
+          .on('log', (log, msg) => {
+              console.log('nghtmr:vnt:log', log, msg)
           })
           .goto(default_job.url)
           .viewport(config.video.size.width, config.video.size.height)
@@ -341,9 +347,9 @@ var render = (function () {
     return new Promise((resolve, reject) => {
 
       nightmare
-        .evaluate(function (position, done) {
+        .evaluate(function (position) {
           console.log('nghtmr:goto:eval',position)
-          init(position, done)
+          init(position)
         }, keyframe)
         .wait(100)
         .then(function (result) {
