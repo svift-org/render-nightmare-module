@@ -287,12 +287,12 @@ var render = (function () {
                           if (err) throw err;
                           
                           size_count++
-                          resolve()
+                          return module.processSize
                         });
 
                     }else{
                       size_count++
-                      resolve()
+                      return module.processSize
                     }
 
                   }).catch(reason => {
@@ -302,7 +302,7 @@ var render = (function () {
             })
           })
           .then(()=>{
-            resolve()
+            
           })
           .catch(()=>{
             reject()
