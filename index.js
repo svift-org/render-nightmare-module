@@ -154,7 +154,7 @@ var render = (function () {
           nightmare
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
-              console.log('nghtmr:snap-scrnsht', snap_count)
+              console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
               update_callback('png', (snap_count / job.data.params.duration))
               return module.goTo((snap_count / job.data.params.duration))
             })
@@ -342,13 +342,17 @@ var render = (function () {
     })
   }
 
-  module.goTo = (keyframe) => {
-    console.log('nghtmr:goto')
+  module.goTo = (_keyframe) => {
+    let keyframe = _keyframe
+
+    console.log('nghtmr:goto', keyframe)
+
     return new Promise((resolve, reject) => {
 
       nightmare
         .evaluate(function (position) {
-          console.log('nghtmr:goto:eval',position)
+          console.log(position)
+          console.log('nghtmr:goto:eval', position)
           init(position)
         }, keyframe)
         .wait(100)
