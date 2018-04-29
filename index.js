@@ -213,7 +213,7 @@ var render = (function () {
           //console.log('svg',svg)
           return svg
         }).then(function (result) {
-          fs.writeFileSync('.' + job.folder + '/vector.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
+          fs.writeFileSync('.' + job.folder + '/' + job.id + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
           update_callback('svg', 1)
           render_callback('renderDone');
