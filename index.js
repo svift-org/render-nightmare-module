@@ -136,25 +136,29 @@ var render = (function () {
   module.snap = () => {
     console.log('nghtmr:snap')
 
-    return Promise.all((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)).map(snap_count=>{
-      return new Promise((resolve, reject) => {
-        nightmare
-          .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
-          .then(() => {
-            update_callback('png', (snap_count / job.data.params.duration))
-            return module.goTo((snap_count / job.data.params.duration))
-          })
-          .then(()=>{
-            resolve()
-          })
-          .catch(reason => {
-            console.error('render-nightmare:snap', reason)
-            reject()
-          })
+    return new Promise((resolve, reject) => {
+      forEachPromise((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)), (snap_count)=>{
+        return new Promise((resolve, reject) => {
+          nightmare
+            .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
+            .then(() => {
+              update_callback('png', (snap_count / job.data.params.duration))
+              return module.goTo((snap_count / job.data.params.duration))
+            })
+            .then(()=>{
+              resolve()
+            })
+            .catch(reason => {
+              console.error('render-nightmare:snap', reason)
+              reject()
+            })
+        })
+      }).then(()=>{
+        resolve()
+      }).catch(reason => {
+        console.error('render-nightmare:snap-outer', reason)
+        reject()
       })
-    }))
-    .then(()=>{
-      return module.getSVG()
     })
     
   }
@@ -208,91 +212,100 @@ var render = (function () {
 
     console.log('nghtmr:processSize')
 
-    return Promise.all(config.sizes.map(size=>{
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      forEachPromise(config.sizes, size => {
+        return new Promise((resolve, reject) => {
 
-        module.setScale(false)
-          .then(()=>{
-            return module.resize(size.size.width, size.size.height)
-          })
-          .then(()=>{
-            return module.setScale(true)
-          })
-          .then(()=>{
-            return module.resize(size.scale.width, size.scale.height)
-          })
-          .then(()=>{
-            return module.goTo(1)
-          })
-          .then(()=>{
-            return new Promise((resolve, reject) => {
-              nightmare
-                .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
-                .then(function (result) {
-                  console.log('nghtmr-processSize:screenshot')
-                    if(size.scale.width != size.output.width || size.scale.height != size.output.height){
-                      gm()
-                        .in('.' + job.folder + '/social/' + size.file + '.png')
-                        .gravity('Center')
-                        .extent(size.output.width, size.output.height)
-                        .background('#ffffff')
-                        .write('.' + job.folder + '/social/' + size.file + '.png', function(err){
-                          if (err) throw err;
-                          
-                          size_count++
-                          resolve()
-                        });
-
-                    }else{
-                      size_count++
-                      resolve()
-                    }
-
-                  }).catch(reason => {
-                    console.error('render-nightmare:processSize', reason)
-                    reject()
-                  })
+          module.setScale(false)
+            .then(()=>{
+              return module.resize(size.size.width, size.size.height)
             })
-          })
-          .then(()=>{
-            resolve()            
-          })
-          .catch(()=>{
-            reject()
-          })
+            .then(()=>{
+              return module.setScale(true)
+            })
+            .then(()=>{
+              return module.resize(size.scale.width, size.scale.height)
+            })
+            .then(()=>{
+              return module.goTo(1)
+            })
+            .then(()=>{
+              return new Promise((resolve, reject) => {
+                nightmare
+                  .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
+                  .then(function (result) {
+                    console.log('nghtmr-processSize:screenshot')
+                      if(size.scale.width != size.output.width || size.scale.height != size.output.height){
+                        gm()
+                          .in('.' + job.folder + '/social/' + size.file + '.png')
+                          .gravity('Center')
+                          .extent(size.output.width, size.output.height)
+                          .background('#ffffff')
+                          .write('.' + job.folder + '/social/' + size.file + '.png', function(err){
+                            if (err) throw err;
+                            
+                            size_count++
+                            resolve()
+                          });
+
+                      }else{
+                        size_count++
+                        resolve()
+                      }
+
+                    }).catch(reason => {
+                      console.error('render-nightmare:processSize', reason)
+                      reject()
+                    })
+              })
+            })
+            .then(()=>{
+              resolve()            
+            })
+            .catch(()=>{
+              reject()
+            })
+
+        })
+      }).then(()=>{
+
+        //All the sizes are done. Prepare for keyframe rendering
+        return new Promise((resolve, reject) => {
+          social_callback()
+          resolve()
+        }).catch(()=>{
+          reject()
+        })
 
       })
-    })).then(()=>{
-
-      //All the sizes are done. Prepare for keyframe rendering
-      return new Promise((resolve, reject) => {
-        social_callback()
+      .then(()=>{
+        return module.setScale(false)
+      })
+      .then(()=>{
+        return module.resize(config.video.size.width, config.video.size.height)
+      })
+      .then(()=>{
+        return module.reset()
+      })
+      .then(()=>{
+        return module.setScale(true)
+      })
+      .then(()=>{
+        return module.resize(config.video.output.width, config.video.output.height)
+      })
+      .then(()=>{
+        return module.goTo(0)
+      })
+      .then(()=>{
+        return module.snap()
+      }).then(()=>{
+        return module.getSVG()
+      }).then(()=>{
         resolve()
-      }).catch(()=>{
+      }).catch(reason => {
+        console.error('render-nightmare:processSize-outer', reason)
         reject()
       })
-
-    })
-    .then(()=>{
-      return module.setScale(false)
-    })
-    .then(()=>{
-      return module.resize(config.video.size.width, config.video.size.height)
-    })
-    .then(()=>{
-      return module.reset()
-    })
-    .then(()=>{
-      return module.setScale(true)
-    })
-    .then(()=>{
-      return module.resize(config.video.output.width, config.video.output.height)
-    })
-    .then(()=>{
-      return module.goTo(0)
-    })
-    .then(()=>{
-      return module.snap()
     })
 
   }
@@ -344,6 +357,21 @@ var render = (function () {
     }else{
       return '00'+n
     }
+  }
+
+  /**
+ * 
+ * @param items An array of items.
+ * @param fn A function that accepts an item from the array and returns a promise.
+ * @returns {Promise}
+ * Credit: https://stackoverflow.com/questions/31413749/node-js-promise-all-and-foreach
+ */
+  function forEachPromise(items, fn) {
+      return items.reduce(function (promise, item) {
+          return promise.then(function () {
+              return fn(item);
+          });
+      }, Promise.resolve());
   }
 
   return module;
