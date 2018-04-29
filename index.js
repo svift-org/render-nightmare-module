@@ -163,6 +163,7 @@ var render = (function () {
 
   module.cleanSVG = function (svg, width, height){
     console.log('nghtmr:cleanSVG')
+    console.log(svg)
     if(svg == undefined) return undefined
 
     var replace = [
@@ -184,23 +185,16 @@ var render = (function () {
     return new Promise((resolve, reject) => {
       nightmare
         .evaluate(function () {
-          return getSVG()
+          let svg = getSVG()
+          console.log('svg',svg)
+          return svg
         }).then(function (result) {
-          fs.writeFileSync('.' + job.folder + '/svg/' + module.formatNumber(job.snap_count) + '.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
+          fs.writeFileSync('.' + job.folder + '/vector.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
 
-          if(job.snap_count < job.data.params.duration){
-            update_callback('svg', (job.snap_count / job.data.params.duration))
-            return module.goTo((job.snap_count / job.data.params.duration))
-          }else{
-            render_callback('renderDone');
-            resolve()
-          }
-        }).then(()=>{
-          if(job.snap_count < job.data.params.duration){
-            return module.snap()
-          }else{
-            resolve()
-          }
+          update_callback('svg', 1)
+          render_callback('renderDone');
+          resolve()
+
         }).then(()=>{
           resolve()
         }).catch(reason => {
