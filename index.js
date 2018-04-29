@@ -102,10 +102,10 @@ var render = (function () {
     console.log('nghtmr:scale')
     return new Promise((resolve, reject) => {
       nightmare
-        .evaluate(function (data, done) {
-          setScale(data, done);
+        .evaluate(function (data) {
+          setScale(data);
         }, scale)
-        .then(function(result){ 
+        .then(() => { 
           resolve()
         })
         .catch(reason => {
@@ -129,10 +129,10 @@ var render = (function () {
 
     return new Promise((resolve, reject) => {
       nightmare
-        .evaluate(function (data, done) {
-          vis(data, done);
+        .evaluate(function (data) {
+          vis(data);
         }, data)
-        .then(function (result) {
+        .then(() => {
           return module.goTo(1)
         })
         .then(()=>{
@@ -164,6 +164,7 @@ var render = (function () {
               return module.goTo((snap_count / job.data.params.duration))
             })
             .then(()=>{
+              console.log('nghtmr:snap:resolve-inner',snap_count)
               resolve()
             })
             .catch(reason => {
@@ -172,6 +173,7 @@ var render = (function () {
             })
         })
       }).then(()=>{
+        console.log('nghtmr:snap:resolve',snap_count)
         resolve()
       }).catch(reason => {
         console.error('render-nightmare:snap-outer', reason)
@@ -208,7 +210,7 @@ var render = (function () {
       nightmare
         .evaluate(function () {
           let svg = getSVG()
-          console.log('svg',svg)
+          //console.log('svg',svg)
           return svg
         }).then(function (result) {
           fs.writeFileSync('.' + job.folder + '/vector.svg', module.cleanSVG(result, config.video.size.width, config.video.size.height), 'utf8')
@@ -335,10 +337,10 @@ var render = (function () {
     return new Promise((resolve, reject) => {
 
       nightmare
-        .evaluate(function (done) {
+        .evaluate(function () {
           console.log('reset');
-          reset(done);
-        }).then(function (result) {
+          reset()
+        }).then(() => {
           resolve()
         })
         .catch(reason => {
@@ -361,7 +363,7 @@ var render = (function () {
           console.log('nghtmr:goto:eval:'+position)
           init(position)
         }, keyframe)
-        .wait(100)
+        //.wait(100)
         .then(() => {
           console.log('goto done')
           resolve()
