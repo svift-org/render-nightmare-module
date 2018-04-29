@@ -336,6 +336,7 @@ var render = (function () {
 
       nightmare
         .evaluate(function (position, done) {
+          console.log('nghtmr:goto:eval',position)
           init(position, done)
         }, keyframe)
         .wait(100)
