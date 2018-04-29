@@ -354,8 +354,8 @@ var render = (function () {
           console.log('nghtmr:goto:eval:'+position)
           init(position)
         }, keyframe)
-        //.wait(100)
-        .then(function (result) {
+        .wait(100)
+        .then(() => {
           console.log('goto done')
           resolve()
         })
