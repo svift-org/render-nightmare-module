@@ -159,7 +159,7 @@ var render = (function () {
             .evaluate(()=>{
               setTimeout(()=>{
                 window.scrollBy(0,5)
-              }, 1000)
+              }, 500)
             })
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
@@ -258,7 +258,7 @@ var render = (function () {
                   .evaluate(()=>{
                     setTimeout(()=>{
                       window.scrollBy(0,5)
-                    }, 1000)
+                    }, 500)
                   })
                   .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
                   .then(function (result) {
