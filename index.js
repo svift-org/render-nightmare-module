@@ -173,7 +173,7 @@ var render = (function () {
             })
         })
       }).then(()=>{
-        console.log('nghtmr:snap:resolve',snap_count)
+        console.log('nghtmr:snap:resolve')
         resolve()
       }).catch(reason => {
         console.error('render-nightmare:snap-outer', reason)
