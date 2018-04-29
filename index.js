@@ -351,12 +351,12 @@ var render = (function () {
 
       nightmare
         .evaluate(function (position) {
-          console.log(position)
-          console.log('nghtmr:goto:eval', position)
+          console.log('nghtmr:goto:eval:'+position)
           init(position)
         }, keyframe)
-        .wait(100)
+        //.wait(100)
         .then(function (result) {
+          console.log('goto done')
           resolve()
         })
         .catch(reason => {
