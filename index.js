@@ -156,6 +156,11 @@ var render = (function () {
         console.log('nghtmr:snap:forEachPromise', snap_count)
         return new Promise((resolve, reject) => {
           nightmare
+            .evaluate(()=>{
+              setTimeout(()=>{
+                window.scrollBy(0,5)
+              }, 1000)
+            })
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
               console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
@@ -250,6 +255,11 @@ var render = (function () {
               console.log('nghtmr-processSize:screenshot-before')
               return new Promise((resolve, reject) => {
                 nightmare
+                  .evaluate(()=>{
+                    setTimeout(()=>{
+                      window.scrollBy(0,5)
+                    }, 1000)
+                  })
                   .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
                   .then(function (result) {
                     console.log('nghtmr-processSize:screenshot')
