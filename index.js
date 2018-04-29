@@ -221,60 +221,20 @@ var render = (function () {
 
   module.processSize = () => {
 
-//     function workMyCollection(arr) {
-//     return q.all(arr.map(function(item) {
-//         return doSomethingAsync(item);
-//     }));    
-// }
-
     console.log('nghtmr:processSize')
-    if(size_count >= config.sizes.length){
-      social_callback()
 
+    return Promise.all(config.sizes.map(size=>{
       return new Promise((resolve, reject) => {
 
-        //All the sizes are done. Prepare for keyframe rendering
         module.setScale(false)
           .then(()=>{
-            return module.resize(config.video.size.width, config.video.size.height)
-          })
-          .then(()=>{
-            return module.reset()
+            return module.resize(size.size.width, size.size.height)
           })
           .then(()=>{
             return module.setScale(true)
           })
           .then(()=>{
-            return module.resize(config.video.output.width, config.video.output.height)
-          })
-          .then(()=>{
-            return module.goTo(0)
-          })
-          .then(()=>{
-            return module.snap()
-          })
-          .then(()=>{
-            resolve()
-          })
-          .catch(()=>{
-            reject()
-          });
-      })
-
-
-    }else{
-
-      return new Promise((resolve, reject) => {
-
-        module.setScale(false)
-          .then(()=>{
-            return module.resize(config.sizes[size_count].size.width, config.sizes[size_count].size.height)
-          })
-          .then(()=>{
-            return module.setScale(true)
-          })
-          .then(()=>{
-            return module.resize(config.sizes[size_count].scale.width, config.sizes[size_count].scale.height)
+            return module.resize(size.scale.width, size.scale.height)
           })
           .then(()=>{
             return module.goTo(1)
@@ -282,25 +242,25 @@ var render = (function () {
           .then(()=>{
             return new Promise((resolve, reject) => {
               nightmare
-                .screenshot('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', {x:0,y:0,width:config.sizes[size_count].scale.width,height:config.sizes[size_count].scale.height})
+                .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
                 .then(function (result) {
                   console.log('nghtmr-processSize:screenshot')
-                    if(config.sizes[size_count].scale.width != config.sizes[size_count].output.width || config.sizes[size_count].scale.height != config.sizes[size_count].output.height){
+                    if(size.scale.width != size.output.width || size.scale.height != size.output.height){
                       gm()
-                        .in('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png')
+                        .in('.' + job.folder + '/social/' + size.file + '.png')
                         .gravity('Center')
-                        .extent(config.sizes[size_count].output.width, config.sizes[size_count].output.height)
+                        .extent(size.output.width, size.output.height)
                         .background('#ffffff')
-                        .write('.' + job.folder + '/social/' + config.sizes[size_count].file + '.png', function(err){
+                        .write('.' + job.folder + '/social/' + size.file + '.png', function(err){
                           if (err) throw err;
                           
                           size_count++
-                          return module.processSize
+                          resolve()
                         });
 
                     }else{
                       size_count++
-                      return module.processSize
+                      resolve()
                     }
 
                   }).catch(reason => {
@@ -317,7 +277,45 @@ var render = (function () {
           })
 
       })
-    }
+    })).then(()=>{
+
+      //All the sizes are done. Prepare for keyframe rendering
+      return new Promise((resolve, reject) => {
+        social_callback()
+        resolve()
+      }).catch(()=>{
+        reject()
+      })
+
+    })
+    .then(()=>{
+      return module.setScale(false)
+    })
+    .then(()=>{
+      return module.resize(config.video.size.width, config.video.size.height)
+    })
+    .then(()=>{
+      return module.reset()
+    })
+    .then(()=>{
+      return module.setScale(true)
+    })
+    .then(()=>{
+      return module.resize(config.video.output.width, config.video.output.height)
+    })
+    .then(()=>{
+      return module.goTo(0)
+    })
+    .then(()=>{
+      return module.snap()
+    })
+    .then(()=>{
+      resolve()
+    })
+    .catch(()=>{
+      reject()
+    });
+
   }
 
   module.reset = () => {
