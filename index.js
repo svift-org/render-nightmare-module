@@ -135,37 +135,28 @@ var render = (function () {
 
   module.snap = () => {
     console.log('nghtmr:snap')
-    job.snap_count++;
-    
-    return new Promise((resolve, reject) => {
-      nightmare
-        .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
-        .then(() => {
-          update_callback('png', (job.snap_count / job.data.params.duration))
 
-          if(job.snap_count == job.data.params.duration){
-            return module.getSVG()
-          }else{
-            return module.goTo((job.snap_count / job.data.params.duration))
-          }
-        })
-        .then(() => {
-          if(job.snap_count == job.data.params.duration){
-            return module.snap()
-          }else{
+    return Promise.all((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)).map(snap_count=>{
+      return new Promise((resolve, reject) => {
+        nightmare
+          .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
+          .then(() => {
+            update_callback('png', (snap_count / job.data.params.duration))
+            return module.goTo((snap_count / job.data.params.duration))
+          })
+          .then(()=>{
             resolve()
-          }
-        })
-        .then(() => {
-          if(job.snap_count == job.data.params.duration){
-            resolve()
-          }
-        })
-        .catch(reason => {
-          console.error('render-nightmare:snap', reason)
-          reject()
-        })
+          })
+          .catch(reason => {
+            console.error('render-nightmare:snap', reason)
+            reject()
+          })
+      })
+    }))
+    .then(()=>{
+      return module.getSVG()
     })
+    
   }
 
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
@@ -309,12 +300,6 @@ var render = (function () {
     .then(()=>{
       return module.snap()
     })
-    .then(()=>{
-      resolve()
-    })
-    .catch(()=>{
-      reject()
-    });
 
   }
 
