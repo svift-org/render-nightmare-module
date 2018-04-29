@@ -10,7 +10,7 @@ var fs = require('fs'),
   gm = require('gm')
 
 var Nightmare = require('nightmare')
-var nightmare = Nightmare()
+var nightmare = Nightmare({show:true})
 
 var render = (function () {
  
@@ -43,7 +43,10 @@ var render = (function () {
       try {
         const load = nightmare
           .on('page', (type, message, stack)=>{
-            console.log('nghtmr', type, message)
+            console.log('nghtmr:vnt:page', type, message)
+          })
+          .on('console', (log, msg) => {
+              console.log('nghtmr:vnt:console', msg)
           })
           .goto(default_job.url)
           .viewport(config.video.size.width, config.video.size.height)
