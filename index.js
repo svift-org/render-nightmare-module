@@ -32,6 +32,7 @@ var render = (function () {
 
   //Load template and scripts+styles
   module.init = async function (callback, _update_callback, _social_callback, _config) {
+    console.log('nghtmr:init')
     config = _config
     render_callback = callback
     update_callback = _update_callback
@@ -64,6 +65,7 @@ var render = (function () {
   }
 
   module.resize = (width, height) => {
+    console.log('nghtmr:resize')
     return new Promise((resolve, reject) => {
       nightmare
         .viewport(width, height)
@@ -82,6 +84,7 @@ var render = (function () {
   }
 
   module.setScale = scale => {
+    console.log('nghtmr:scale')
     return new Promise((resolve, reject) => {
       nightmare
         .evaluate(function (data, done) {
@@ -98,6 +101,7 @@ var render = (function () {
   }
 
   module.render = (data, id, folder) => {
+    console.log('nghtmr:render')
     size_count = 0
     job = {}
     for(var key in default_job){
@@ -130,6 +134,7 @@ var render = (function () {
   }
 
   module.snap = () => {
+    console.log('nghtmr:snap')
     job.snap_count++;
     
     return new Promise((resolve, reject) => {
@@ -166,6 +171,7 @@ var render = (function () {
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
 
   module.cleanSVG = function (svg, width, height){
+    console.log('nghtmr:cleanSVG')
     if(svg == undefined) return undefined
 
     var replace = [
@@ -183,6 +189,7 @@ var render = (function () {
   }
 
   module.getSVG = () => {
+    console.log('nghtmr:getSVG')
     return new Promise((resolve, reject) => {
       nightmare
         .evaluate(function () {
@@ -213,6 +220,7 @@ var render = (function () {
   }
 
   module.processSize = () => {
+    console.log('nghtmr:processSize')
     if(size_count >= config.sizes.length){
       social_callback()
 
@@ -305,6 +313,7 @@ var render = (function () {
   }
 
   module.reset = () => {
+    console.log('nghtmr:reset')
     return new Promise((resolve, reject) => {
 
       nightmare
@@ -323,6 +332,7 @@ var render = (function () {
   }
 
   module.goTo = (keyframe) => {
+    console.log('nghtmr:goto')
     return new Promise((resolve, reject) => {
 
       nightmare
