@@ -158,6 +158,7 @@ var render = (function () {
           nightmare
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
+              console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
               console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
               update_callback('png', (snap_count / job.data.params.duration))
               return module.goTo((snap_count / job.data.params.duration))
@@ -252,6 +253,7 @@ var render = (function () {
                 nightmare
                   .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
                   .then(function (result) {
+                    console.log('.' + job.folder + '/social/' + size.file + '.png')
                     console.log('nghtmr-processSize:screenshot')
                       if(size.scale.width != size.output.width || size.scale.height != size.output.height){
                         gm()
