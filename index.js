@@ -115,6 +115,23 @@ var render = (function () {
     })
   }
 
+  module.preResize = scale => {
+    //console.log('nghtmr:scale')
+    return new Promise((resolve, reject) => {
+      nightmare
+        .evaluate(() => {
+          resize(); 
+        })
+        .then(() => { 
+          resolve()
+        })
+        .catch(reason => {
+          console.error('render-nightmare:setScale', reason)
+          reject()
+        })
+    })
+  }
+
   module.render = (data, id, folder) => {
     //console.log('nghtmr:render')
     size_count = 0
@@ -311,6 +328,9 @@ var render = (function () {
       })
       .then(()=>{
         return module.resize(config.video.size.width, config.video.size.height)
+      })
+      .then(()=>{
+        return module.preResize()
       })
       .then(()=>{
         return module.reset()
