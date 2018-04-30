@@ -32,7 +32,7 @@ var render = (function () {
 
   //Load template and scripts+styles
   module.init = async function (callback, _update_callback, _social_callback, _config) {
-    console.log('nghtmr:init')
+    //console.log('nghtmr:init')
     config = _config
     render_callback = callback
     update_callback = _update_callback
@@ -43,19 +43,19 @@ var render = (function () {
       try {
         const load = nightmare
           .on('page', (type, message, stack)=>{
-            console.log('nghtmr:vnt:page', type, message)
+            //console.log('nghtmr:vnt:page', type, message)
           })
           .on('console', (log, msg) => {
-              console.log('nghtmr:vnt:console', log, msg)
+            //console.log('nghtmr:vnt:console', log, msg)
           })
           .on('javascript', (log, msg) => {
-              console.log('nghtmr:vnt:javascript', log, msg)
+            //console.log('nghtmr:vnt:javascript', log, msg)
           })
           .on('log', (log, msg) => {
-              console.log('nghtmr:vnt:log', log, msg)
+            //console.log('nghtmr:vnt:log', log, msg)
           })
           .on('nightmare', (log, msg) => {
-              console.log('nghtmr:vnt:nightmare', log, msg)
+            //console.log('nghtmr:vnt:nightmare', log, msg)
           })
           .goto(default_job.url)
           .viewport(config.video.size.width, config.video.size.height)
@@ -80,7 +80,7 @@ var render = (function () {
   }
 
   module.resize = (width, height) => {
-    console.log('nghtmr:resize')
+    //console.log('nghtmr:resize')
     return new Promise((resolve, reject) => {
       nightmare
         .viewport(width, height)
@@ -99,7 +99,7 @@ var render = (function () {
   }
 
   module.setScale = scale => {
-    console.log('nghtmr:scale')
+    //console.log('nghtmr:scale')
     return new Promise((resolve, reject) => {
       nightmare
         .evaluate(function (data) {
@@ -116,7 +116,7 @@ var render = (function () {
   }
 
   module.render = (data, id, folder) => {
-    console.log('nghtmr:render')
+    //console.log('nghtmr:render')
     size_count = 0
     job = {}
     for(var key in default_job){
@@ -149,31 +149,31 @@ var render = (function () {
   }
 
   module.snap = () => {
-    console.log('nghtmr:snap')
+    //console.log('nghtmr:snap')
 
     return new Promise((resolve, reject) => {
       forEachPromise((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)), (snap_count)=>{
-        console.log('nghtmr:snap:forEachPromise', snap_count)
+        //console.log('nghtmr:snap:forEachPromise', snap_count)
         return new Promise((resolve, reject) => {
           nightmare
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
-              console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
-              console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
+              //console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
+              //console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
               update_callback('png', (snap_count / job.data.params.duration))
               return module.goTo((snap_count / job.data.params.duration))
             })
             .then(()=>{
-              console.log('nghtmr:snap:resolve-inner',snap_count)
+              //console.log('nghtmr:snap:resolve-inner',snap_count)
               resolve()
             })
             .catch(reason => {
-              console.error('render-nightmare:snap', reason)
+              //console.error('render-nightmare:snap', reason)
               reject()
             })
         })
       }).then(()=>{
-        console.log('nghtmr:snap:resolve')
+        //console.log('nghtmr:snap:resolve')
         resolve()
       }).catch(reason => {
         console.error('render-nightmare:snap-outer', reason)
@@ -186,8 +186,8 @@ var render = (function () {
   //The SVG output is optimized for Browser, Adobe Illustrator and Sketch App
 
   module.cleanSVG = function (svg, width, height){
-    console.log('nghtmr:cleanSVG')
-    console.log(svg)
+    //console.log('nghtmr:cleanSVG')
+    //console.log(svg)
     if(svg == undefined) return undefined
 
     var replace = [
@@ -205,7 +205,7 @@ var render = (function () {
   }
 
   module.getSVG = () => {
-    console.log('nghtmr:getSVG')
+    //console.log('nghtmr:getSVG')
     return new Promise((resolve, reject) => {
       nightmare
         .evaluate(function () {
@@ -230,7 +230,7 @@ var render = (function () {
 
   module.processSize = () => {
 
-    console.log('nghtmr:processSize')
+    //console.log('nghtmr:processSize')
 
     return new Promise((resolve, reject) => {
       forEachPromise(config.sizes, size => {
@@ -256,13 +256,13 @@ var render = (function () {
               return module.setScale(true)
             })
             .then(()=>{
-              console.log('nghtmr-processSize:screenshot-before')
+              //console.log('nghtmr-processSize:screenshot-before')
               return new Promise((resolve, reject) => {
                 nightmare
                   .screenshot('.' + job.folder + '/social/' + size.file + '.png', {x:0,y:0,width:size.scale.width,height:size.scale.height})
                   .then(function (result) {
-                    console.log('.' + job.folder + '/social/' + size.file + '.png')
-                    console.log('nghtmr-processSize:screenshot')
+                    //console.log('.' + job.folder + '/social/' + size.file + '.png')
+                    //console.log('nghtmr-processSize:screenshot')
                       if(size.scale.width != size.output.width || size.scale.height != size.output.height){
                         gm()
                           .in('.' + job.folder + '/social/' + size.file + '.png')
@@ -339,12 +339,12 @@ var render = (function () {
   }
 
   module.reset = () => {
-    console.log('nghtmr:reset')
+    //console.log('nghtmr:reset')
     return new Promise((resolve, reject) => {
 
       nightmare
         .evaluate(function () {
-          console.log('reset');
+          //console.log('reset');
           reset()
         }).then(() => {
           resolve()
@@ -360,18 +360,18 @@ var render = (function () {
   module.goTo = (_keyframe) => {
     let keyframe = _keyframe
 
-    console.log('nghtmr:goto', keyframe)
+    //console.log('nghtmr:goto', keyframe)
 
     return new Promise((resolve, reject) => {
 
       nightmare
         .evaluate(function (position) {
-          console.log('nghtmr:goto:eval:'+position)
+          //console.log('nghtmr:goto:eval:'+position)
           init(position)
         }, keyframe)
         //.wait(100)
         .then(() => {
-          console.log('goto done')
+          //console.log('goto done')
           resolve()
         })
         .catch(reason => {
