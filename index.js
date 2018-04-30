@@ -247,7 +247,13 @@ var render = (function () {
               return module.resize(size.scale.width, size.scale.height)
             })
             .then(()=>{
+              return module.setScale(false)
+            })
+            .then(()=>{
               return module.goTo(1)
+            })
+            .then(()=>{
+              return module.setScale(true)
             })
             .then(()=>{
               console.log('nghtmr-processSize:screenshot-before')
