@@ -85,8 +85,7 @@ var render = (function () {
       nightmare
         .viewport(width, height)
         .evaluate(function(){
-          //wait for page to finish loading
-          return false
+          resize();
         })
         .then(result => {
           resolve()
