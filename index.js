@@ -263,15 +263,15 @@ var render = (function () {
             .then(()=>{
               return module.resize(size.scale.width, size.scale.height)
             })
-            .then(()=>{
-              return module.setScale(false)
-            })
-            .then(()=>{
-              return module.goTo(1)
-            })
-            .then(()=>{
-              return module.setScale(true)
-            })
+            // .then(()=>{
+            //   return module.setScale(false)
+            // })
+            // .then(()=>{
+            //   return module.goTo(1)
+            // })
+            // .then(()=>{
+            //   return module.setScale(true)
+            // })
             .then(()=>{
               //console.log('nghtmr-processSize:screenshot-before')
               return new Promise((resolve, reject) => {
@@ -329,9 +329,9 @@ var render = (function () {
       .then(()=>{
         return module.resize(config.video.size.width, config.video.size.height)
       })
-      .then(()=>{
-        return module.preResize()
-      })
+      // .then(()=>{
+      //   return module.preResize()
+      // })
       .then(()=>{
         return module.reset()
       })
