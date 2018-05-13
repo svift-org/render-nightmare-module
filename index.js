@@ -168,7 +168,7 @@ var render = (function () {
     //console.log('nghtmr:snap')
 
     return new Promise((resolve, reject) => {
-      forEachPromise((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)), (snap_count)=>{
+      forEachPromise((Array.apply(null, {length: job.data.params.duration+1}).map(Number.call, Number)), (snap_count)=>{
         //console.log('nghtmr:snap:forEachPromise', snap_count)
         return new Promise((resolve, reject) => {
           nightmare
@@ -177,7 +177,9 @@ var render = (function () {
               //console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
               //console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
               update_callback('png', (snap_count / job.data.params.duration))
-              return module.goTo((snap_count / job.data.params.duration))
+              let next_snap = (snap_count / job.data.params.duration)
+              if(next_snap>1)next_snap=1
+              return module.goTo(next_snap)
             })
             .then(()=>{
               //console.log('nghtmr:snap:resolve-inner',snap_count)
