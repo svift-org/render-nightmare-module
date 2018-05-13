@@ -177,26 +177,10 @@ var render = (function () {
               //console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
               //console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
               update_callback('png', (snap_count / job.data.params.duration))
-              let next_snap = (snap_count / job.data.params.duration)
+              let next_snap = (snap_count+1 / job.data.params.duration)
               if(next_snap>1)next_snap=1
               return module.goTo(next_snap)
             })
-            .then(()=>{
-              //console.log('nghtmr:snap:resolve-inner',snap_count)
-              resolve()
-            })
-            .catch(reason => {
-              //console.error('render-nightmare:snap', reason)
-              reject()
-            })
-        })
-      }).then(()=>{
-        return module.goTo(1)
-      }).then(()=>{
-        return new Promise((resolve, reject) => {
-          nightmare
-            .wait(500)
-            .screenshot('.' + job.folder + '/png/' + module.formatNumber(job.data.params.duration+1) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(()=>{
               //console.log('nghtmr:snap:resolve-inner',snap_count)
               resolve()
