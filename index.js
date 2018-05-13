@@ -141,7 +141,9 @@ var render = (function () {
     job.id = id
     job.data = data
     job.folder = folder
-    if(!('duration' in job.data.params)){ job.data.params['duration'] = 100 }
+    if(!('duration' in job.data.params)){ 
+      job.data.params['duration'] = 100 
+    }
 
     return new Promise((resolve, reject) => {
       nightmare
