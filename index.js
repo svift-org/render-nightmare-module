@@ -195,6 +195,7 @@ var render = (function () {
       }).then(()=>{
         return new Promise((resolve, reject) => {
           nightmare
+            .wait(500)
             .screenshot('.' + job.folder + '/png/' + (job.data.params.duration+1) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(()=>{
               //console.log('nghtmr:snap:resolve-inner',snap_count)
