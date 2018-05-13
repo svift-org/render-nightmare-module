@@ -172,8 +172,10 @@ var render = (function () {
         //console.log('nghtmr:snap:forEachPromise', snap_count)
         return new Promise((resolve, reject) => {
           nightmare
+            .wait(100)
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
+              console.log('snap', snap_count)
               //console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
               //console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
               update_callback('png', (snap_count / 99))
