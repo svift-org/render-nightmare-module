@@ -176,8 +176,8 @@ var render = (function () {
             .then(() => {
               //console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
               //console.log('nghtmr:snap-scrnsht', snap_count, (snap_count / job.data.params.duration))
-              update_callback('png', (snap_count / 100))
-              let next_snap = (snap_count+1 / 100)
+              update_callback('png', (snap_count / 99))
+              let next_snap = (snap_count+1 / 99)
               if(next_snap>1)next_snap=1
               return module.goTo(next_snap)
             })
