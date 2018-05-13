@@ -159,8 +159,7 @@ var render = (function () {
         })
         .catch(reason => {
           console.error('render-nightmare:render', reason)
-          //reject()
-          resolve()
+          reject()
         })
       })
   }
