@@ -170,10 +170,11 @@ var render = (function () {
     //console.log('nghtmr:snap')
 
     return new Promise((resolve, reject) => {
-      forEachPromise((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)), (snap_count)=>{
+      forEachPromise((Array.apply(null, {length: (job.data.params.duration+1)}).map(Number.call, Number)), (snap_count)=>{
         //console.log('nghtmr:snap:forEachPromise', snap_count)
         return new Promise((resolve, reject) => {
           nightmare
+            .wait(10)
             .screenshot('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png', {x:0,y:0,width:config.video.output.width,height:config.video.output.height})
             .then(() => {
               //console.log('.' + job.folder + '/png/' + module.formatNumber(snap_count) + '.png')
