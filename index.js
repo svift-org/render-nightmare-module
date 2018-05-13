@@ -168,7 +168,7 @@ var render = (function () {
     //console.log('nghtmr:snap')
 
     return new Promise((resolve, reject) => {
-      forEachPromise((Array.apply(null, {length: job.data.params.duration}).map(Number.call, Number)), (snap_count)=>{
+      forEachPromise((Array.apply(null, {length: (job.data.params.duration+1)}).map(Number.call, Number)), (snap_count)=>{
         //console.log('nghtmr:snap:forEachPromise', snap_count)
         return new Promise((resolve, reject) => {
           nightmare
